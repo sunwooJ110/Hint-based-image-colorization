@@ -15,9 +15,8 @@ from utils import (
     generate_hints
 )
 
-# --------------------------------------------------
+
 # 설정
-# --------------------------------------------------
 HINT_RATIOS = [0.0, 0.001, 0.005, 0.01, 0.03, 0.05]
 NUM_SAMPLES = 50   # 평가에 사용할 이미지 수
 MODEL_PATH = "colorization_unet_final.pth"
@@ -25,9 +24,8 @@ OUTPUT_DIR = "evaluation_results"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-# --------------------------------------------------
+
 # 평가 함수
-# --------------------------------------------------
 def compute_metrics(pred_lab, gt_lab, mask, ab_hint):
     # RGB 변환
     pred_rgb = lab_to_rgb(pred_lab)
@@ -58,9 +56,7 @@ def compute_metrics(pred_lab, gt_lab, mask, ab_hint):
     return psnr, ssim, delta_e, hce
 
 
-# --------------------------------------------------
 # 메인 평가 루프
-# --------------------------------------------------
 def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("Using device:", device)
@@ -123,9 +119,8 @@ def main():
             np.mean(hce_list) if hce_list else np.nan
         ])
 
-    # --------------------------------------------------
+
     # CSV 저장
-    # --------------------------------------------------
     csv_path = os.path.join(OUTPUT_DIR, "evaluation_metrics.csv")
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
@@ -134,9 +129,8 @@ def main():
 
     print(f"Saved CSV to {csv_path}")
 
-    # --------------------------------------------------
+
     # 그래프 생성
-    # --------------------------------------------------
     ratios = [r[0] * 100 for r in results]
     delta_es = [r[3] for r in results]
     hces = [r[4] for r in results]
