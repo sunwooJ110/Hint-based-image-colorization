@@ -1,0 +1,12 @@
+# large data
+cat-and-dog/
+cache_lab_bins/
+
+# models
+*.pth
+
+# python cache
+__pycache__/
+*.pyc
+
+
