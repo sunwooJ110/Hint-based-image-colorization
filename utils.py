@@ -3,9 +3,7 @@ import torch
 import numpy as np
 from skimage import color
 
-# =========================================================
 # 1. RGB <-> LAB
-# =========================================================
 
 def rgb_to_lab(rgb: np.ndarray) -> np.ndarray:
     """
@@ -37,9 +35,7 @@ def split_lab(lab: np.ndarray):
     return lab[0:1], lab[1:3]
 
 
-# =========================================================
 # 2. User hint generation (논문: sparse user clicks)
-# =========================================================
 
 def generate_hints(ab: np.ndarray, num_hints: int):
     """
@@ -66,9 +62,7 @@ def generate_hints(ab: np.ndarray, num_hints: int):
     return ab_hint, mask
 
 
-# =========================================================
 # 3. In-gamut ab bins (논문: 313 bins)
-# =========================================================
 
 def build_in_gamut_bins(step: int = 10):
     """
@@ -90,9 +84,7 @@ AB_BINS = build_in_gamut_bins(step=10)[:313]
 
 
 
-# =========================================================
 # 4. ab → bin index (classification GT)
-# =========================================================
 
 def ab_to_bin(ab: np.ndarray) -> np.ndarray:
     """
@@ -111,9 +103,7 @@ def ab_to_bin(ab: np.ndarray) -> np.ndarray:
     return idx.reshape(B, H, W)
 
 
-# =========================================================
 # 5. Annealed Mean (논문 inference 핵심)
-# =========================================================
 
 def annealed_mean(logits: torch.Tensor, T: float = 0.38):
     """
@@ -134,9 +124,7 @@ def annealed_mean(logits: torch.Tensor, T: float = 0.38):
     return ab
 
 
-# =========================================================
 # 6. Class rebalancing weights (논문 Eq. 4)
-# =========================================================
 
 def compute_rebalance_weights(prior: np.ndarray, lam: float = 0.5):
     """
@@ -150,9 +138,7 @@ def compute_rebalance_weights(prior: np.ndarray, lam: float = 0.5):
     return weights.astype(np.float32)
 
 
-# =========================================================
 # 7. Torch helpers
-# =========================================================
 
 def to_tensor(arr: np.ndarray) -> torch.Tensor:
     return torch.from_numpy(arr).float()
