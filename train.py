@@ -10,9 +10,6 @@ from utils import compute_rebalance_weights
 
 
 def main():
-    # --------------------------------------------------
-    # 0. Device selection (CUDA + MPS + CPU)
-    # --------------------------------------------------
     if torch.cuda.is_available():
         device = "cuda"
     elif torch.backends.mps.is_available():
@@ -22,9 +19,7 @@ def main():
 
     print("Using device:", device)
 
-    # --------------------------------------------------
     # 1. Dataset / DataLoader
-    # --------------------------------------------------
     dataset = ColorizationDataset(
         train=True,
         hint_ratios=(0.01, 0.03, 0.05),
@@ -48,23 +43,17 @@ def main():
             pin_memory=False
         )
 
-    # --------------------------------------------------
     # 2. Model / Optimizer
-    # --------------------------------------------------
     model = UNetColorizationNet(num_bins=313).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
-    # --------------------------------------------------
     # 3. Class rebalancing weights
-    # --------------------------------------------------
     prior = np.ones(313, dtype=np.float32)
     class_weights = compute_rebalance_weights(prior)
     class_weights = torch.tensor(class_weights, device=device)
 
-    # --------------------------------------------------
     # 4. Training loop
-    # --------------------------------------------------
-    num_epochs = 10  # 캐시가 있으므로 10 epoch면 충분
+    num_epochs = 10 
     best_loss = float("inf")
 
     for epoch in range(num_epochs):
@@ -115,9 +104,7 @@ def main():
         avg_loss = total_loss / len(loader)
         print(f"Epoch [{epoch + 1}/{num_epochs}] Loss: {avg_loss:.4f}")
 
-        # --------------------------------------------------
-        # 5. Checkpoint saving (핵심)
-        # --------------------------------------------------
+        # 5. Checkpoint saving 
         if avg_loss < best_loss:
             best_loss = avg_loss
             torch.save(
@@ -126,9 +113,7 @@ def main():
             )
             print("Saved best model")
 
-    # --------------------------------------------------
     # 6. Final model save
-    # --------------------------------------------------
     torch.save(model.state_dict(), "colorization_unet_final.pth")
     print("Training finished. Final model saved.")
 
