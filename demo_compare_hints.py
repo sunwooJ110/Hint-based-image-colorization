@@ -11,31 +11,27 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("Using device:", device)
 
-    # ----------------------------------------
+
     # 1. 이미지 하나 고정
-    # ----------------------------------------
     base_dataset = ColorizationDataset(
         train=False,
-        hint_ratios=(0.01,)   # 의미 없음, 이미지는 고정용
+        hint_ratios=(0.01,) 
     )
 
-    # 🔥 같은 이미지 하나 고정
+    # 같은 이미지 하나 고정
     L, _, _, _, ab_gt = base_dataset[0]
 
     H, W = ab_gt.shape[1:]
 
-    # ----------------------------------------
-    # 2. 모델 로드 (한 번만)
-    # ----------------------------------------
+    # 2. 모델 로드 
     model = UNetColorizationNet(num_bins=313).to(device)
     model.load_state_dict(
         torch.load("colorization_unet_final.pth", map_location=device)
     )
     model.eval()
 
-    # ----------------------------------------
+
     # 3. 힌트 비율 설정
-    # ----------------------------------------
     hint_ratios = [0.001, 0.01, 0.03]
     titles = ["0.1% Hint", "1% Hint", "3% Hint"]
 
@@ -69,9 +65,7 @@ def main():
         pred_rgb = lab_to_rgb(pred_lab)
         results.append(pred_rgb)
 
-    # ----------------------------------------
     # 4. 시각화
-    # ----------------------------------------
     plt.figure(figsize=(12, 4))
 
     for i, (img, title) in enumerate(zip(results, titles)):
